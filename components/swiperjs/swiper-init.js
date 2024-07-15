@@ -1,5 +1,5 @@
 export function initialiseSwiper() {
-  swiper = new Swiper(".swiper", {
+  let swiper = new Swiper(".swiper", {
     loop: true,
     slidesPerView: 1,
     autoplay: {
@@ -38,4 +38,6 @@ export function initialiseSwiper() {
   swiper.on("sliderMove", function () {
     swiper.autoplay = false;
   });
+
+  return swiper;
 }

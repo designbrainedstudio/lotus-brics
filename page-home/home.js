@@ -1,10 +1,10 @@
 import { setHeroCTA } from "./hero-cta.js";
-import { initialiseSwiper } from "./swiper-init.js";
+import { initialiseSwiper } from "../components/swiperjs/swiper-init.js";
 
 let currentSlide = 0;
 let swiper;
 
 $(document).ready(function () {
-  initialiseSwiper();
+  swiper = initialiseSwiper();
   setHeroCTA();
 });
