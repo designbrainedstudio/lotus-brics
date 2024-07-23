@@ -1,76 +1,48 @@
 $(document).ready(function () {
-  populateTableFromDiv();
+  populateTable();
 });
 
-function populateTableFromDiv() {
-  // Get the source content
-  const sourceContent = document.getElementById("unit-details-data");
-  const destinationTable = document.getElementById("unit-details");
+function populateTable() {
+  var sourceContent = $("#unit-details-data").text().trim();
+  var destinationTable = $("#unit-details");
+  var tableBody = destinationTable.find("tbody");
+  var rows = sourceContent.split("\n");
+  var hasThirdColumn = false;
+  var validFormat = true;
 
-  // Check if the source content exists
-  if (!sourceContent) {
-    return;
-  }
+  tableBody.empty(); // Clear any existing rows in the table body
 
-  const tableHead = destinationTable.querySelector("thead");
-  const tableBody = destinationTable.querySelector("tbody");
+  rows.forEach(function (row) {
+    var columns = row.split("|").map(function (col) {
+      return col.trim(); // Trim spaces around each part
+    });
 
-  // Clear any existing rows in the table body
-  tableBody.innerHTML = "";
-
-  // Get the text content and split it by lines
-  const lines = sourceContent.textContent.trim().split("\n");
-
-  // Assume there are no 3 columns.
-  let hasThreeColumns = false;
-
-  for (let line of lines) {
-    // Check if line contains the delimiter
-    if (!line.includes("|")) {
-      sourceContent.classList.add("hide");
+    if (columns.length < 2) {
+      validFormat = false;
       return;
     }
 
-    const parts = line.split("|").map((part) => part.trim());
-
-    if (parts.length < 2) {
-      continue;
+    if (columns.length === 3 && columns[2] !== "") {
+      hasThirdColumn = true;
+    } else {
+      columns[2] = ""; // Ensure there is always a third cell, even if empty
     }
 
-    // Create a new table row with class "table_row"
-    const row = document.createElement("tr");
-    row.classList.add("table_row");
-
-    // Create cells and populate with content from parts
-    parts.forEach((part, index) => {
-      if (index < 3) {
-        // Ensure we don't exceed 3 parts
-        const cell = document.createElement("td");
-        cell.classList.add("table_cell");
-        cell.textContent = part;
-        row.appendChild(cell);
-      }
+    var newRow = $("<tr>").addClass("table_row");
+    columns.forEach(function (col) {
+      newRow.append($("<td>").addClass("table_cell").text(col));
     });
+    tableBody.append(newRow);
+  });
 
-    // Append row to the table body
-    tableBody.appendChild(row);
-
-    // Check if the current row has 3 cells, but only once (till any one row has 3 cols).
-    if (parts.length == 3 && hasThreeColumns == false) {
-      hasThreeColumns = true;
-    }
+  // Remove third column if no row contains data for it
+  if (!hasThirdColumn) {
+    destinationTable.find("th:nth-child(3), td:nth-child(3)").remove();
   }
 
-  // Adjust table head columns based on the number of columns
-  if (!hasThreeColumns) {
-    const headers = tableHead.querySelectorAll("th");
-    if (headers.length === 3) {
-      headers[2].remove(); // Remove third column header
-    }
+  if (!validFormat) {
+    destinationTable.addClass("hide");
+  } else {
+    destinationTable.removeClass("hide");
   }
-
-  // Add 'hide' class to the source content element
-  sourceContent.classList.add("hide");
-  // Remove 'hide' class from the destination table
-  destinationTable.classList.remove("hide");
 }
