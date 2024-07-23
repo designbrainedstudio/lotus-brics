@@ -9,7 +9,6 @@ function populateTableFromDiv() {
 
   // Check if the source content exists
   if (!sourceContent) {
-    destinationTable.classList.add("hide");
     return;
   }
 
@@ -21,7 +20,9 @@ function populateTableFromDiv() {
 
   // Get the text content and split it by lines
   const lines = sourceContent.textContent.trim().split("\n");
-  let hasThreeColumns = true;
+
+  // Assume there are no 3 columns.
+  let hasThreeColumns = false;
 
   for (let line of lines) {
     // Check if line contains the delimiter
@@ -54,9 +55,9 @@ function populateTableFromDiv() {
     // Append row to the table body
     tableBody.appendChild(row);
 
-    // Check if the current row has only 2 cells
-    if (parts.length < 3) {
-      hasThreeColumns = false;
+    // Check if the current row has 3 cells, but only once (till any one row has 3 cols).
+    if (parts.length == 3 && hasThreeColumns == false) {
+      hasThreeColumns = true;
     }
   }
 
